@@ -9,48 +9,30 @@
 - (id)initWithFrame:(CGRect)aFrame
 {
     self = [super initWithFrame:aFrame];
-    slider = [[CPSlider alloc] initWithFrame:CGRectMake(30, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 65, 24)];
-    //[slider setContinuous:YES];
-    [slider setMinValue:0.0];
-    [slider setMaxValue:5.0];
-    [slider setDoubleValue:3.0];
-    [slider setAction:@selector(adjustBandgapSlider:)];
-    [self addSubview:slider];
-            
-    /*                                                 
-    var label = [CPTextField labelWithText:@"0"];
-    [label setFrameOrigin:CGPointMake(0, CGRectGetHeight(aFrame)/2.0 - 4.0)];
-    [self addSubview:label];
+    if (self != nil)
+        {
+            slider = [[CPSlider alloc] initWithFrame:CGRectMake(10, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 15, 24)];
 
-    label = [CPTextField labelWithText:@"5"];
-    [label setFrameOrigin:CGPointMake(CGRectGetWidth(aFrame) - CGRectGetWidth([label frame]), CGRectGetHeight(aFrame)/2.0 - 4.0)];
-    [self addSubview:label];
-    */
+            [slider setMinValue:0.0];
+            [slider setMaxValue:5.0];
+            [slider setTarget:self];
+            [slider setAction:@selector(sliderChangedValue:)];
+            [self addSubview:slider];
+            [slider setDoubleValue:3.0];
+        }
+    
+    
     return self;
 }
 
-- (double) doubleValue
+// This action is called when the slider is used by the user (sender is the slider that we have created in initWithFrame:)
+- (void) sliderChangedValue:(id)sender
 {
-    return [slider doubleValue];
-}
-
-- (void) setDoubleValue: (double) newValue
-{
-    [slider setDoubleValue:newValue];
-}
-
-- (CPSlider) slider
-{
-    return slider;
-}
-- (void) setTarget: (id) aTarget
-{
-    [slider setTarget:aTarget];
-}
-
-- (id) target
-{
-    return [silder target];
+    CPLogConsole(@"moo");
+	// This is the trick. 
+	// We ask the application (CPApp) to trigger itself (nil) the action (adjustBandgap:) with 
+	// the slider as the sender. This will allow us to call [sender value] to get the slider current value (as a double).
+    [CPApp sendAction:@selector(adjustBandgap:) to:nil from:sender];
 }
 
 

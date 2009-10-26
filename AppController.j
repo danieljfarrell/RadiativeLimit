@@ -11,6 +11,9 @@
 @import "FillView.j"
 @import "BandgapSlider.j"
 
+//Some constants...
+var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
+
 @implementation AppController : CPObject
 {
     double bandgap;
@@ -28,11 +31,12 @@
     bandgap = newBandgap;
 }
 
-- (void) adjustBandgapSlider: (double) newBandgap
+- (void) adjustBandgap: (id) sender
 {
-    CPLogConsole(@"adjustBandgapSlider:");
+    CPLogRegister(CPLogPopup);
+    CPLogConsole(@"adjustBandgap: %@", [sender description]);
     var bounds = [fillView bounds];
-    var fractionalPosition = [[slider slider] doubleValue]/([[slider slider] maxValue] - [[slider slider] minValue]);
+    var fractionalPosition = [sender doubleValue]/([sender maxValue] - [sender minValue]);
     CPLogConsole([CPString stringWithFormat:@"fractional position %@", fractionalPosition]);
     var newXOrigin = fractionalPosition * CGRectGetWidth(bounds);
     var newWidth   = CPRectGetWidth(bounds) - newXOrigin;
@@ -47,46 +51,71 @@
     var theWindow = [[CPWindow alloc] initWithContentRect:CGRectMakeZero() styleMask:CPBorderlessBridgeWindowMask];
     var contentView = [theWindow contentView];
     
-    //var label = [[CPTextField alloc] initWithFrame:CGRectMakeZero()];
-    //[label setStringValue:@"Hello World!"];
-    //[label setFont:[CPFont boldSystemFontOfSize:24.0]];
-    //[label sizeToFit];
-    //[label setAutoresizingMask:CPViewMinXMargin | CPViewMaxXMargin | CPViewMinYMargin | CPViewMaxYMargin];
-    //[label setCenter:[contentView center]];
-    //[contentView addSubview:label];
+   	// Create the toolbar and set its delegate to be the AppController instance.
+    var toolbar = [[CPToolbar alloc] initWithIdentifier:"Bandgap"];    
+    [toolbar setDelegate:self];
+	[toolbar setVisible:YES];
+	// Associate the toolbar with the window
+	[theWindow setToolbar:toolbar];
+	
     
     //The image view
-    var imageView = [[CPImageView alloc] initWithFrame:CPMakeRect(10.0,60,500.,500.)];
-    var background = [[CPImage alloc] initWithContentsOfFile:@"/Users/daniel/Desktop/spectrum.png"];
+    var imageView = [[CPImageView alloc] initWithFrame:CPMakeRect(10.0,10.0,500.,500.)];
+    var background = [[CPImage alloc] initWithContentsOfFile:@"Resources/spectrum.png"];
     [imageView setImage:background];
-    //[imageView setHasShadow:YES];
+    
+    //The fill view and slider
+    fillView = [[FillView alloc] initWithFrame:CPMakeRect(10.0,10.0,500.0,500.0)];
+    CPLogConsole([[toolbar items] description]);
     
     
-    //The fill view
-    //fillView = [[CPView alloc] initWithFrame:CPMakeRect(10.0,10.0,500.0,500.0)];
-    //[fillView setBackgroundColor:[CPColor redColor]];
-    fillView = [[FillView alloc] initWithFrame:CPMakeRect(10.0,60,500.0,500.0)];
-    
-    
-    // The slider
-    //var bandgapSlider = [[CPSlider alloc] initWithFrame:CPMakeRect(30.0, 520.0, 470, 50.0)];
-    //[bandgapSlider setMinValue:0];
-    //[bandgapSlider setMaxValue:5.0];
-    //[bandgapSlider setDoubleValue: 3.0];
-
-    //slider = [[BandgapSlider alloc] initWithFrame:CPMakeRect(30.0, 600, 470, 50.0)];
-    slider = [[BandgapSlider alloc] initWithFrame:CPMakeRect(10., 10., 500, 50.0)];
-    [slider setTarget:self];
-    
-    
+    //slider = [[BandgapSlider alloc] initWithFrame:CPMakeRect(10., 10., 500, 50.0)];
+    //[slider setTarget:self];
     
     [contentView addSubview:fillView];
     [contentView addSubview:imageView];
-    [contentView addSubview:slider];
+    //[contentView addSubview:slider];
     [theWindow orderFront:self];
     
+    //[self adjustBandgapSlider:[slider doubleValue]];
     // Uncomment the following line to turn on the standard menu bar.
     //[CPMenu setMenuBarVisible:YES];
+}
+
+// **************************** Toolbar delegate code ****************************
+
+// Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
+- (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
+{
+   return [CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
+}
+
+// Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
+- (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
+{
+   return [CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
+}
+
+
+- (CPToolbarItem)toolbar:(CPToolbar)aToolbar itemForItemIdentifier:(CPString)anItemIdentifier willBeInsertedIntoToolbar:(BOOL)aFlag
+{
+	// Create the toolbar item and associate it with its identifier
+    var toolbarItem = [[CPToolbarItem alloc] initWithItemIdentifier:anItemIdentifier];
+
+    if (anItemIdentifier == SliderToolbarItemIdentifier)
+    {
+    	// The toolbar is using a custom view (of class BandgapSlider)
+        [toolbarItem setView:[[BandgapSlider alloc] initWithFrame:CGRectMake(0, 0, 180, 50)]];
+        
+        // We don't associate a target/action with the toolbar item. 
+        // This will be done in the slider contained in the BandgapSlider.
+        [toolbarItem setLabel:"Bandgap"];
+
+        [toolbarItem setMinSize:CGSizeMake(180, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(180, 32)];
+    }
+    
+    return toolbarItem;
 }
 
 @end

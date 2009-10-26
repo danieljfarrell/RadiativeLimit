@@ -676,15 +676,15 @@
 			<key>Draw Y Labels</key>
 			<false/>
 			<key>Include X</key>
-			<string></string>
+			<string>0,4</string>
 			<key>Include Y</key>
 			<string></string>
 			<key>Open</key>
-			<true/>
+			<false/>
 			<key>Pad X Range</key>
-			<integer>3</integer>
+			<integer>1</integer>
 			<key>Pad Y Range</key>
-			<integer>3</integer>
+			<integer>1</integer>
 			<key>Type</key>
 			<string>Main Axis</string>
 			<key>X Categories</key>
@@ -767,7 +767,7 @@
 			<key>Connections</key>
 			<integer>1</integer>
 			<key>Crop</key>
-			<string>-∞,∞</string>
+			<string>0.45,∞</string>
 			<key>Error Bar Size</key>
 			<string>pen</string>
 			<key>Error Color</key>
@@ -1086,89 +1086,9 @@
 			<key>Y Error Type</key>
 			<integer>1</integer>
 		</dict>
-		<dict>
-			<key>Coordinate Anchor</key>
-			<integer>1</integer>
-			<key>Coordinate Anchor X</key>
-			<string>0</string>
-			<key>Coordinate Anchor X Offset</key>
-			<string>0</string>
-			<key>Coordinate Anchor XY</key>
-			<string>0,0</string>
-			<key>Coordinate Anchor Y</key>
-			<string>0</string>
-			<key>Coordinate Anchor Y Offset</key>
-			<string>0</string>
-			<key>Crop With</key>
-			<integer>-1</integer>
-			<key>Crop X</key>
-			<string>-∞,∞</string>
-			<key>Crop Y</key>
-			<string>-∞,∞</string>
-			<key>Exclude</key>
-			<false/>
-			<key>Figure Scale</key>
-			<integer>1</integer>
-			<key>Hide</key>
-			<false/>
-			<key>Image</key>
-			<dict/>
-			<key>Inside Anchor</key>
-			<integer>3</integer>
-			<key>Inside Offset</key>
-			<string>0,0</string>
-			<key>Interpolation</key>
-			<integer>2</integer>
-			<key>Left/Right Anchor</key>
-			<integer>2</integer>
-			<key>Left/Right X Offset</key>
-			<string>0</string>
-			<key>Left/Right Y Offset</key>
-			<string>0</string>
-			<key>Open</key>
-			<true/>
-			<key>Position</key>
-			<integer>1</integer>
-			<key>Rotation</key>
-			<integer>1</integer>
-			<key>Scale</key>
-			<string>1</string>
-			<key>Top/Bottom Anchor</key>
-			<integer>2</integer>
-			<key>Top/Bottom X Offset</key>
-			<string>0</string>
-			<key>Top/Bottom Y Offset</key>
-			<string>0</string>
-			<key>Type</key>
-			<string>Anchored Image</string>
-			<key>X Alignment</key>
-			<integer>1</integer>
-			<key>X Anchor</key>
-			<string>0</string>
-			<key>X Axis Anchor</key>
-			<integer>2</integer>
-			<key>X Axis X Offset</key>
-			<string>0</string>
-			<key>X Axis X Value</key>
-			<string>0</string>
-			<key>X Axis Y Offset</key>
-			<string>0</string>
-			<key>Y Alignment</key>
-			<integer>1</integer>
-			<key>Y Anchor</key>
-			<string>0</string>
-			<key>Y Axis Anchor</key>
-			<integer>2</integer>
-			<key>Y Axis X Offset</key>
-			<string>0</string>
-			<key>Y Axis Y Offset</key>
-			<string>0</string>
-			<key>Y Axis Y Value</key>
-			<string>0</string>
-		</dict>
 	</array>
 	<key>Drawing Size</key>
-	<string>{904, 329}</string>
+	<string>{904, 300}</string>
 	<key>Parameters</key>
 	<dict>
 		<key>Animation</key>
@@ -1576,7 +1496,7 @@
 			<key>Modify Color</key>
 			<integer>0</integer>
 			<key>Name</key>
-			<string>GillSans-Light</string>
+			<string>Optima-Regular</string>
 			<key>Size</key>
 			<real>18</real>
 			<key>Standard Color</key>
@@ -1603,7 +1523,7 @@
 		<key>Marker Size</key>
 		<string>5</string>
 		<key>Open</key>
-		<true/>
+		<false/>
 		<key>Point Color</key>
 		<dict>
 			<key>Color</key>
@@ -1625,6 +1545,8 @@
 			<dict>
 				<key>Name</key>
 				<string></string>
+				<key>Properties</key>
+				<dict/>
 			</dict>
 		</array>
 		<key>Tick Placement</key>
