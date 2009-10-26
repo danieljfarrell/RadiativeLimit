@@ -25,7 +25,9 @@
 }
 
 - (void) drawRect: (CGRect) aRect
-{
+{   
+    CPLogConsole(@"drawRect:");
+    CPLogConsole(CPStringFromRect(filledRect));
     [[CPColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:0.5] set];
     [CPBezierPath fillRect:filledRect];
 }

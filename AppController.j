@@ -30,14 +30,15 @@
 
 - (void) adjustBandgapSlider: (double) newBandgap
 {
-    //CPLogConsole(@"adjustBandgapSlider ", newBandgap);
-    //CGRect bounds = [fillView bounds];
-    //double fractionalPosition = ([slider maxValue] - [slider minValue])/([slider maxValue] + [slider minValue]);
-    //double newXOrigin = fractionalPosition * CGRectGetWidth(bounds);
-    //double newWidth   = CPRectGetWidth(bounds) - newXOrigin;
-    //CGRect newFilledRect = CPMakeRect(newXOrigin, 0.0, newWidth, CPRectGetHeight(bounds));
-    //[fillView setFilledRect: newFilledRect];
-    [fillView setFilledRect:CPMakeRect([slider value]*2, 0.0, 400, 400)];
+    CPLogConsole(@"adjustBandgapSlider:");
+    var bounds = [fillView bounds];
+    var fractionalPosition = [[slider slider] doubleValue]/([[slider slider] maxValue] - [[slider slider] minValue]);
+    CPLogConsole([CPString stringWithFormat:@"fractional position %@", fractionalPosition]);
+    var newXOrigin = fractionalPosition * CGRectGetWidth(bounds);
+    var newWidth   = CPRectGetWidth(bounds) - newXOrigin;
+    var newFilledRect = CPMakeRect(newXOrigin, 0.0, newWidth, CPRectGetHeight(bounds));
+    [fillView setFilledRect: newFilledRect];
+    //[fillView setFilledRect:CPMakeRect([slider doubleValue]*40, 0.0, 400, 400)];
     [fillView setNeedsDisplay:YES];
 }
 

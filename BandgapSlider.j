@@ -10,7 +10,7 @@
 {
     self = [super initWithFrame:aFrame];
     slider = [[CPSlider alloc] initWithFrame:CGRectMake(30, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 65, 24)];
-    [slider setContinuous:YES];
+    //[slider setContinuous:YES];
     [slider setMinValue:0.0];
     [slider setMaxValue:5.0];
     [slider setDoubleValue:3.0];
@@ -29,7 +29,20 @@
     return self;
 }
 
+- (double) doubleValue
+{
+    return [slider doubleValue];
+}
 
+- (void) setDoubleValue: (double) newValue
+{
+    [slider setDoubleValue:newValue];
+}
+
+- (CPSlider) slider
+{
+    return slider;
+}
 - (void) setTarget: (id) aTarget
 {
     [slider setTarget:aTarget];
