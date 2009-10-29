@@ -13,12 +13,15 @@
 
 //Some constants...
 var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
+var PopupToolbarItemIdentifier = "PopupToolbarItemIdentifier";
+var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
 
 @implementation AppController : CPObject
 {
     double bandgap;
     var fillView;
     var slider;
+    CPPopUpButton cellType;
 }
 
 - (double) bandgap
@@ -34,15 +37,12 @@ var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
 - (void) adjustBandgap: (id) sender
 {
     CPLogRegister(CPLogPopup);
-    CPLogConsole(@"adjustBandgap: %@", [sender description]);
-    var bounds = [fillView bounds];
-    var fractionalPosition = [sender doubleValue]/([sender maxValue] - [sender minValue]);
-    CPLogConsole([CPString stringWithFormat:@"fractional position %@", fractionalPosition]);
-    var newXOrigin = fractionalPosition * CGRectGetWidth(bounds);
-    var newWidth   = CPRectGetWidth(bounds) - newXOrigin;
-    var newFilledRect = CPMakeRect(newXOrigin, 0.0, newWidth, CPRectGetHeight(bounds));
-    [fillView setFilledRect: newFilledRect];
-    //[fillView setFilledRect:CPMakeRect([slider doubleValue]*40, 0.0, 400, 400)];
+    // Use y = mx + c to convert between slider bandgap and fractional position
+    var m = 1.0/([sender maxValue] - [sender minValue]);
+    var c = -[sender maxValue]/([sender maxValue] - [sender minValue]) + 1
+    var fractionalPosition = m*[sender doubleValue] + c;
+    CPLogConsole(@"adjustBandgap: %@", fractionalPosition);
+    [fillView setXFillFraction:fractionalPosition];
     [fillView setNeedsDisplay:YES];
 }
 
@@ -52,10 +52,9 @@ var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
     var contentView = [theWindow contentView];
     
    	// Create the toolbar and set its delegate to be the AppController instance.
-    var toolbar = [[CPToolbar alloc] initWithIdentifier:"Bandgap"];    
+    var toolbar = [[CPToolbar alloc] initWithIdentifier:"Toolbar"];    
     [toolbar setDelegate:self];
 	[toolbar setVisible:YES];
-	// Associate the toolbar with the window
 	[theWindow setToolbar:toolbar];
 	
     
@@ -65,19 +64,14 @@ var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
     [imageView setImage:background];
     
     //The fill view and slider
-    fillView = [[FillView alloc] initWithFrame:CPMakeRect(10.0,10.0,500.0,500.0)];
-    CPLogConsole([[toolbar items] description]);
-    
-    
-    //slider = [[BandgapSlider alloc] initWithFrame:CPMakeRect(10., 10., 500, 50.0)];
-    //[slider setTarget:self];
+    fillView = [[FillView alloc] initWithFrame:CPMakeRect(84,10.0,360.,500.0)];
+   
     
     [contentView addSubview:fillView];
     [contentView addSubview:imageView];
-    //[contentView addSubview:slider];
     [theWindow orderFront:self];
     
-    //[self adjustBandgapSlider:[slider doubleValue]];
+    //[self adjustBandgapSlider:[slider ];
     // Uncomment the following line to turn on the standard menu bar.
     //[CPMenu setMenuBarVisible:YES];
 }
@@ -87,13 +81,13 @@ var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
+   return [self toolbarDefaultItemIdentifiers:aToolbar];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
+   return [PopupLabelToolbarItemIdentifier, PopupToolbarItemIdentifier, CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
 }
 
 
@@ -113,6 +107,32 @@ var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
 
         [toolbarItem setMinSize:CGSizeMake(180, 32)];
         [toolbarItem setMaxSize:CGSizeMake(180, 32)];
+    }
+    else if (anItemIdentifier == PopupToolbarItemIdentifier)
+    {
+        cellType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(0, 0, 180, 25)];
+        [cellType addItemWithTitle:@"Shockley–Queisser"];
+        [cellType addItemWithTitle:@"Hot-Carrier"];
+        //[cellType setPullsDown:YES];
+        [toolbarItem setView:cellType];
+        //[toolbarItem setLabel:@"Solar Cell Type:"];
+        [toolbarItem setMinSize:CGSizeMake(180,32)];
+
+    }
+    else if (anItemIdentifier == PopupLabelToolbarItemIdentifier)
+    {
+        // Add a label to see the slider value changes
+        var label = [CPTextField labelWithTitle:@"Solar Cell Type:"];
+        //[label setAlignment:CPCenterTextAlignment];
+        [label setFont:[CPFont systemFontOfSize:12.0]];
+        CPLogConsole([[CPFont systemFontOfSize:12.0] familyName]);
+        //[label setAutoresizingMask:CPViewMinXMargin | CPViewMaxXMargin | CPViewMinYMargin | CPViewMaxYMargin];
+        //[label setFrameOrigin:CGPointMake((CGRectGetWidth([contentView bounds]) - CGRectGetWidth([label frame])) / 2.0, (CGRectGetHeight([contentView bounds]) - CGRectGetHeight([label frame])) / 2.0)];
+        
+        [toolbarItem setView:label];
+        //[toolbarItem setLabel:@"Solar Cell Type:"];
+        [toolbarItem setMinSize:CGSizeMake(90.,50)];
+
     }
     
     return toolbarItem;

@@ -3,33 +3,42 @@
 
 @implementation FillView : CPView
 {
-    var filledRect;
+    double xFillFraction;
+    var width;
+    var height;
+    var yOrigin;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
 {
     self = [super initWithFrame:aFrame];
     //[self setBackgroundColor: [CPColor whiteColor]];
-    filledRect = CPMakeRect(0.0 ,0.0, CPRectGetWidth(aFrame), CPRectGetHeight(aFrame));
+    width = CPRectGetWidth(aFrame)
+    height = CPRectGetHeight(aFrame)
+    yOrigin = CPRectGetMinY(aFrame)
+    filledRect = CPMakeRect(0.0 ,0.0, width, height);
     return self;
 }
 
-- (CGRect) filledRect
+- (void) setXFillFraction: (double) aDouble
 {
-    return filledRect;
+    xFillFraction = aDouble;
 }
 
-- (void) setFilledRect: (CGRect) aRect
+- (double) xFillFraction
 {
-    filledRect = aRect;
+    return xFillFraction;
 }
 
 - (void) drawRect: (CGRect) aRect
 {   
     CPLogConsole(@"drawRect:");
-    CPLogConsole(CPStringFromRect(filledRect));
     [[CPColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:0.5] set];
+    var filledRect = CPRectCreateCopy([self bounds]);
+    filledRect.origin.x = xFillFraction*width;
+    filledRect.size.width = width - filledRect.origin.x;
     [CPBezierPath fillRect:filledRect];
+    [CPBezierPath strokeRect:[self bounds]];
     CPLogConsole(@"exit drawRect:");
 }
 

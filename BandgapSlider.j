@@ -13,12 +13,12 @@
         {
             slider = [[CPSlider alloc] initWithFrame:CGRectMake(10, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 15, 24)];
 
-            [slider setMinValue:0.0];
-            [slider setMaxValue:5.0];
+            [slider setMinValue:0.5];
+            [slider setMaxValue:4.0];
             [slider setTarget:self];
             [slider setAction:@selector(sliderChangedValue:)];
             [self addSubview:slider];
-            [slider setDoubleValue:3.0];
+            [slider setDoubleValue:2.0];
         }
     
     
