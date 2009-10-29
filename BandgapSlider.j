@@ -12,17 +12,21 @@
     if (self != nil)
         {
             slider = [[CPSlider alloc] initWithFrame:CGRectMake(10, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 15, 24)];
-
             [slider setMinValue:0.5];
             [slider setMaxValue:4.0];
             [slider setTarget:self];
+            [slider setDoubleValue:4.0];
             [slider setAction:@selector(sliderChangedValue:)];
+            [slider setDoubleValue:4.0];
             [self addSubview:slider];
-            [slider setDoubleValue:2.0];
+            
         }
-    
-    
     return self;
+}
+
+- (CPSlider) slider
+{
+    return slider;
 }
 
 // This action is called when the slider is used by the user (sender is the slider that we have created in initWithFrame:)

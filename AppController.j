@@ -71,7 +71,22 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     [contentView addSubview:imageView];
     [theWindow orderFront:self];
     
-    //[self adjustBandgapSlider:[slider ];
+    CPLogConsole([[slider slider] description]);
+    CPLogConsole([slider description]);
+    
+    //Assign slider
+    var i=0
+    for (i=0;i<[[toolbar items] count];i=i+1)
+        {
+            
+            if ([[[[toolbar items] objectAtIndex:i] itemIdentifier] isEqualToString:SliderToolbarItemIdentifier])
+            {
+                slider = [[[[toolbar items] objectAtIndex:i] view] slider];
+            }
+        }
+    
+    [self adjustBandgap:slider];
+    [contentView setNeedsDisplay:YES];
     // Uncomment the following line to turn on the standard menu bar.
     //[CPMenu setMenuBarVisible:YES];
 }
@@ -110,13 +125,16 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     }
     else if (anItemIdentifier == PopupToolbarItemIdentifier)
     {
-        cellType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(0, 0, 180, 25)];
+        cellType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(0, 0, 180, 24)];
+        //cellType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(10, CGRectGetHeight(aFrame)/2.0 - 8, CGRectGetWidth(aFrame) - 15, 24)];
+        //[cellType setAlignment:CPCenterTextAlignment];
         [cellType addItemWithTitle:@"Shockley–Queisser"];
-        [cellType addItemWithTitle:@"Hot-Carrier"];
+        [cellType addItemWithTitle:@"Hot–Carrier"];
         //[cellType setPullsDown:YES];
         [toolbarItem setView:cellType];
-        //[toolbarItem setLabel:@"Solar Cell Type:"];
-        [toolbarItem setMinSize:CGSizeMake(180,32)];
+        //[toolbarItem setLabel:@"Solar Cell Type"];
+        [toolbarItem setMinSize:CGSizeMake(180,24)];
+        [toolbarItem setMinSize:CGSizeMake(180,24)];
 
     }
     else if (anItemIdentifier == PopupLabelToolbarItemIdentifier)
@@ -131,7 +149,7 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
         
         [toolbarItem setView:label];
         //[toolbarItem setLabel:@"Solar Cell Type:"];
-        [toolbarItem setMinSize:CGSizeMake(90.,50)];
+        [toolbarItem setMinSize:CGSizeMake(90.,25)];
 
     }
     
