@@ -10,6 +10,7 @@
 @import <AppKit/AppKit.j>
 @import "FillView.j"
 @import "BandgapSlider.j"
+@import "CellBarChartView.j"
 
 //Some constants...
 var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
@@ -20,6 +21,7 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
 {
     double bandgap;
     var fillView;
+    var barChartSQCell;
     var slider;
     CPPopUpButton cellType;
 }
@@ -65,10 +67,21 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     
     //The fill view and slider
     fillView = [[FillView alloc] initWithFrame:CPMakeRect(84,10.0,360.,500.0)];
-   
+    
+    //Bar chart view for Shockley–Queisser cell
+    barChartCell = [[CellBarChartView alloc] initWithFrame:CPMakeRect(510, 10, 400, 300)];
+    [barChartCell setVoltageSQCell:2.0];
+    [barChartCell setCurrentSQCell:200.0];
+    [barChartCell setEfficiencySQCell:0.5];
+    [barChartCell setVoltageHCCell:2.5];
+    [barChartCell setCurrentHCCell:500.0];
+    [barChartCell setEfficiencyHCCell:0.7];
+    [barChartCell setAutoresizingMask:CPViewHeightSizable];
+
     
     [contentView addSubview:fillView];
     [contentView addSubview:imageView];
+    [contentView addSubview:barChartCell];
     [theWindow orderFront:self];
     
     CPLogConsole([[slider slider] description]);
