@@ -16,12 +16,13 @@
 var SliderToolbarItemIdentifier = "SliderToolbarItemIdentifier";
 var PopupToolbarItemIdentifier = "PopupToolbarItemIdentifier";
 var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
+var SegmentedButtonToolbarItemIdentifer = "SegmentedButtonToolbarItemIdentifier"
 
 @implementation AppController : CPObject
 {
     double bandgap;
     var fillView;
-    var barChartSQCell;
+    var barChartCell;
     var slider;
     CPPopUpButton cellType;
 }
@@ -36,16 +37,51 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     bandgap = newBandgap;
 }
 
+- (IBAction) adjustSelectedPVCell: (id) sender
+{
+ 
+    var clickedSegment = [sender selectedSegment];
+    if (clickedSegment == 0)
+    {
+        //SQ cell
+        CPLogConsole(@"SQ PV selected");
+        [barChartCell setShouldDisplaySQCell:YES];
+        [barChartCell setShouldDisplayHCCell:NO];
+        [barChartCell setNeedsDisplay:YES];
+    }
+    else if (clickedSegment == 1)
+    {
+        //HC Cell
+        CPLogConsole(@"HC PV selected");
+        [barChartCell setShouldDisplaySQCell:NO];
+        [barChartCell setShouldDisplayHCCell:YES];
+        [barChartCell setNeedsDisplay:YES];
+    }
+    else
+    {
+        //Error
+    }
+}
 - (void) adjustBandgap: (id) sender
 {
-    CPLogRegister(CPLogPopup);
+    //CPLogRegister(CPLogPopup);
     // Use y = mx + c to convert between slider bandgap and fractional position
     var m = 1.0/([sender maxValue] - [sender minValue]);
     var c = -[sender maxValue]/([sender maxValue] - [sender minValue]) + 1
     var fractionalPosition = m*[sender doubleValue] + c;
-    CPLogConsole(@"adjustBandgap: %@", fractionalPosition);
+    //CPLogConsole(@"adjustBandgap: %@", fractionalPosition);
     [fillView setXFillFraction:fractionalPosition];
     [fillView setNeedsDisplay:YES];
+    
+    //When the bandgap changes we also need to update the cell efficiencies
+    
+    [barChartCell setCurrentSQCell:[self SQCellCurrent]];
+    [barChartCell setEfficiencySQCell:[self SQCellEfficiency]];
+    [barChartCell setVoltageSQCell:[self SQCellVoltage]];
+    [barChartCell setCurrentHCCell:[self HCCellCurrent]];
+    [barChartCell setEfficiencyHCCell:[self HCCellEfficiency]];
+    [barChartCell setVoltageHCCell:[self HCCellVoltage]];
+    [barChartCell setNeedsDisplay:YES];
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -58,7 +94,7 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     [toolbar setDelegate:self];
 	[toolbar setVisible:YES];
 	[theWindow setToolbar:toolbar];
-	
+
     
     //The image view
     var imageView = [[CPImageView alloc] initWithFrame:CPMakeRect(10.0,10.0,500.,500.)];
@@ -69,14 +105,14 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     fillView = [[FillView alloc] initWithFrame:CPMakeRect(84,10.0,360.,500.0)];
     
     //Bar chart view for Shockley–Queisser cell
-    barChartCell = [[CellBarChartView alloc] initWithFrame:CPMakeRect(510, 10, 400, 300)];
+    barChartCell = [[CellBarChartView alloc] initWithFrame:CPMakeRect(510, 100, 400, 300)];
     [barChartCell setVoltageSQCell:2.0];
     [barChartCell setCurrentSQCell:200.0];
     [barChartCell setEfficiencySQCell:0.5];
     [barChartCell setVoltageHCCell:2.5];
     [barChartCell setCurrentHCCell:500.0];
     [barChartCell setEfficiencyHCCell:0.7];
-    [barChartCell setAutoresizingMask:CPViewHeightSizable];
+    //[barChartCell setAutoresizingMask:CPViewHeightSizable];
 
     
     [contentView addSubview:fillView];
@@ -104,7 +140,7 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
     //[CPMenu setMenuBarVisible:YES];
 }
 
-// **************************** Toolbar delegate code ****************************
+// ^^^^^^^^^^^^^^ Toolbar delegate code ^^^^^^^^^^^^^^
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
@@ -115,7 +151,8 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [PopupLabelToolbarItemIdentifier, PopupToolbarItemIdentifier, CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
+   //return [PopupLabelToolbarItemIdentifier, PopupToolbarItemIdentifier, CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier, SegmentedButtonToolbarItemIdentifer];
+   return [SegmentedButtonToolbarItemIdentifer,CPToolbarFlexibleSpaceItemIdentifier, SliderToolbarItemIdentifier];
 }
 
 
@@ -165,8 +202,90 @@ var PopupLabelToolbarItemIdentifier = "PopupLabelToolbarItemIdentifier";
         [toolbarItem setMinSize:CGSizeMake(90.,25)];
 
     }
+    else if (anItemIdentifier == SegmentedButtonToolbarItemIdentifer)
+    {
+        // Add a label to see the slider value changes
+        var button = [[CPSegmentedControl alloc] initWithFrame:CGRectMake(0, 0, 150, 25)];
+        [button setSegmentCount:2];
+        //[[button cell] setTrackingMode:CPSegmentedSwitchTrackingSelectAny];
+        [button setLabel:@"Shockley–Queisser" forSegment:0];        
+        [button setLabel:@"Hot–Carrier" forSegment:1];
+        [button setWidth:60. forSegment:0];
+        [button setWidth:60. forSegment:1];
+        [button setSelectedSegment:0];
+        [button setTarget:self];
+        [button setAction:@selector(adjustSelectedPVCell:)];
+        [toolbarItem setView:button];
+        [toolbarItem setLabel:@"Cell type"];
+        [toolbarItem setMinSize:CGSizeMake(268.,25)];
+    }
     
     return toolbarItem;
+}
+
+
+
+// Paramaterised efficiency and voltage for the SQ and HC cells, with which we can find the voltage.
+
+- (double) HCCellEfficiency
+{
+    var a  = 0.00130989;
+    var b  = 1.41102;  
+    var c  = -1.26123;  
+    var d  = 0.437854;  
+    var e  = -0.0692429;
+    var f  = 0.00417117;
+    var x  = [slider doubleValue];
+    return a + b*x + c*x^2 + d*x^3 + e*x^4 + f*x^5;
+}
+
+
+- (double) HCCellVoltage
+{
+    var a = 0.101827;
+    var b = 1.17471;
+    var c = -0.941615;
+    var d = 0.428836;
+    var e = -0.109426;
+    var f = 0.0145421;
+    var g = -0.000782343;
+    var x  = [slider doubleValue];
+    return a + b*x + c*x^2 + d*x^3 + e*x^4 + f*x^5 + g*x^6;
+}
+
+- (double) HCCellCurrent
+{
+    return 1351.019*[self HCCellEfficiency]/[self HCCellVoltage];
+}
+
+- (double) SQCellEfficiency
+{
+    var a  = -0.00401806;
+    var b  = -0.0974627; 
+    var c  = 1.4996;     
+    var d  = -1.89511;   
+    var e  = 1.04876;    
+    var f  = -0.304887;  
+    var g  = 0.0456523;  
+    var h  = -0.00278044;
+    var x  = [slider doubleValue];
+    return a + b*x + c*x^2 + d*x^3 + e*x^4 + f*x^5 + g*x^6 + h*x^7;
+}
+
+- (double) SQCellVoltage
+{
+    var a  = -0.0659911;
+    var b  = 0.544191;  
+    var c  = 0.267502;  
+    var d  = -0.077008; 
+    var e  = 0.00786633;
+    var x  = [slider doubleValue];
+    return a + b*x + c*x^2 + d*x^3 + e*x^4;
+}
+
+- (double) SQCellCurrent
+{
+    return 1351.019*[self SQCellEfficiency]/[self SQCellVoltage];
 }
 
 @end
